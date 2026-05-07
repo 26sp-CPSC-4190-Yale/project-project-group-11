@@ -1,0 +1,19 @@
+# Joins users to trips. The home_airport here is a per-trip override —
+# if someone is flying from a different city for this specific trip, they
+# can set it here without changing their global home airport.
+from datetime import datetime, timezone
+
+from sqlalchemy import DateTime, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.db.database import Base
+
+class TripMember(Base):
+    __tablename__ = "trip_members"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    trip_id: Mapped[int] = mapped_column(ForeignKey("trips.id"), nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    role: Mapped[str] = mapped_column(String(50), default="member", nullable=False)
+    home_airport: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    joined_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)

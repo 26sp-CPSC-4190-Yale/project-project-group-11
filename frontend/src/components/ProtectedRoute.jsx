@@ -1,0 +1,13 @@
+// Wraps any route that requires a logged-in user. While auth is loading we
+// render nothing (avoids a flash of the login page for returning users).
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
+export default function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+  if (!user) return <Navigate to="/login" replace />;
+
+  return children;
+}
